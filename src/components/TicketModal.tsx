@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Users, Minus, Plus, Ticket, MapPin, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { GraduationCap, Users, Minus, Plus, Ticket, MapPin, Clock, Mail, Phone } from "lucide-react";
 
 interface TicketModalProps {
   open: boolean;
@@ -18,6 +20,8 @@ type TicketType = {
 const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
   const [step, setStep] = useState<"category" | "tickets">("category");
   const [category, setCategory] = useState<"student" | "non-student" | null>(null);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   
   const [tickets, setTickets] = useState<TicketType[]>([
     { id: "regular", name: "Regular Student", price: 100, quantity: 0 },
@@ -56,9 +60,13 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
   const handleClose = () => {
     setStep("category");
     setCategory(null);
+    setEmail("");
+    setPhone("");
     setTickets(tickets.map(t => ({ ...t, quantity: 0 })));
     onOpenChange(false);
   };
+
+  const isFormValid = email.trim() !== "" && phone.trim() !== "" && getTotalPrice() > 0;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -138,29 +146,68 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
               </div>
 
               {getTotalPrice() > 0 && (
-                <div className="bg-card rounded-lg p-5 border-2 border-primary space-y-3">
-                  <div className="flex justify-between items-center text-lg font-bold">
-                    <span className="text-foreground">Total Amount:</span>
-                    <span className="text-accent text-2xl">KES {getTotalPrice().toLocaleString()}</span>
-                  </div>
-                  <div className="border-t border-border pt-3 space-y-3">
-                    <h4 className="font-bold text-foreground text-sm">Payment Instructions:</h4>
-                    <div className="bg-muted rounded p-4 space-y-3 text-sm">
-                      <div className="space-y-2">
-                        <p className="text-foreground"><span className="font-semibold">Paybill:</span> 329329</p>
-                        <p className="text-foreground"><span className="font-semibold">Account Number:</span> 0100408218100</p>
+                <>
+                  <div className="bg-card rounded-lg p-5 border-2 border-primary space-y-4">
+                    <div className="flex justify-between items-center text-lg font-bold">
+                      <span className="text-foreground">Total Amount:</span>
+                      <span className="text-accent text-2xl">KES {getTotalPrice().toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="border-t border-border pt-4 space-y-4">
+                      <h4 className="font-bold text-foreground">Your Contact Information</h4>
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          <Label htmlFor="email" className="text-foreground flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            Email Address *
+                          </Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="bg-background border-border"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone" className="text-foreground flex items-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            Phone Number *
+                          </Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+254 700 000 000"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="bg-background border-border"
+                            required
+                          />
+                        </div>
                       </div>
-                      <div className="bg-background rounded p-3 border border-border">
-                        <p className="text-foreground font-semibold mb-2">⚠️ Important:</p>
-                        <ul className="text-foreground space-y-1 text-xs list-disc list-inside">
-                          <li>Payment is made through M-PESA Paybill to the bank account above</li>
-                          <li><span className="font-semibold">Enter your EMAIL ADDRESS</span> when prompted for the account number/reference</li>
-                          <li>Your ticket will be sent to the email you provide</li>
-                        </ul>
+                    </div>
+
+                    <div className="border-t border-border pt-3 space-y-3">
+                      <h4 className="font-bold text-foreground text-sm">Payment Instructions:</h4>
+                      <div className="bg-muted rounded p-4 space-y-3 text-sm">
+                        <div className="space-y-2">
+                          <p className="text-foreground"><span className="font-semibold">Paybill:</span> 329329</p>
+                          <p className="text-foreground"><span className="font-semibold">Account Number:</span> 0100408218100</p>
+                        </div>
+                        <div className="bg-background rounded p-3 border border-border">
+                          <p className="text-foreground font-semibold mb-2">⚠️ Important:</p>
+                          <ul className="text-foreground space-y-1 text-xs list-disc list-inside">
+                            <li>Payment is made through M-PESA Paybill to the bank account above</li>
+                            <li>Your ticket will be sent to your email once the bank confirms payment receipt</li>
+                            <li>Please ensure your contact details above are correct</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </>
               )}
 
               <div className="flex gap-3">
@@ -173,8 +220,8 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
                 </Button>
                 <Button
                   onClick={handleClose}
-                  disabled={getTotalPrice() === 0}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  disabled={!isFormValid}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
                 >
                   Confirm Purchase
                 </Button>
