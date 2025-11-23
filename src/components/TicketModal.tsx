@@ -210,8 +210,8 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
                       <h4 className="font-bold text-foreground text-sm">Payment Instructions:</h4>
                       <div className="bg-muted rounded p-4 space-y-3 text-sm">
                         <div className="space-y-2">
-                          <p className="text-foreground"><span className="font-semibold">Paybill:</span> 329329</p>
-                          <p className="text-foreground"><span className="font-semibold">Account Number:</span> 0100408218100</p>
+                          <p className="text-foreground"><span className="font-semibold">Paybill:</span> 542542</p>
+                          <p className="text-foreground"><span className="font-semibold">Account Number:</span> 03105189506151</p>
                         </div>
                         <div className="bg-background rounded p-3 border border-border">
                           <p className="text-foreground font-semibold mb-2">⚠️ Important:</p>
