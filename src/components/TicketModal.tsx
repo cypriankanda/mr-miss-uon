@@ -143,11 +143,21 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
                     <span className="text-foreground">Total Amount:</span>
                     <span className="text-accent text-2xl">KES {getTotalPrice().toLocaleString()}</span>
                   </div>
-                  <div className="border-t border-border pt-3 space-y-2">
-                    <h4 className="font-bold text-foreground text-sm">Payment Details:</h4>
-                    <div className="bg-muted rounded p-3 space-y-1 text-sm">
-                      <p className="text-foreground"><span className="font-semibold">Paybill:</span> 329329</p>
-                      <p className="text-foreground"><span className="font-semibold">Account Number:</span> 0100408218100</p>
+                  <div className="border-t border-border pt-3 space-y-3">
+                    <h4 className="font-bold text-foreground text-sm">Payment Instructions:</h4>
+                    <div className="bg-muted rounded p-4 space-y-3 text-sm">
+                      <div className="space-y-2">
+                        <p className="text-foreground"><span className="font-semibold">Paybill:</span> 329329</p>
+                        <p className="text-foreground"><span className="font-semibold">Account Number:</span> 0100408218100</p>
+                      </div>
+                      <div className="bg-background rounded p-3 border border-border">
+                        <p className="text-foreground font-semibold mb-2">⚠️ Important:</p>
+                        <ul className="text-foreground space-y-1 text-xs list-disc list-inside">
+                          <li>Payment is made through M-PESA Paybill to the bank account above</li>
+                          <li><span className="font-semibold">Enter your EMAIL ADDRESS</span> when prompted for the account number/reference</li>
+                          <li>Your ticket will be sent to the email you provide</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
