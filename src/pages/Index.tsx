@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Atom, Home, Trophy, Award, Ticket, Crown, Headphones } from "lucide-react";
+import { Link } from "react-router-dom";
 import Countdown from "@/components/Countdown";
 import TicketModal from "@/components/TicketModal";
+import ContactModal from "@/components/ContactModal";
 
 const Index = () => {
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -21,14 +24,14 @@ const Index = () => {
           <Atom className="w-8 h-8 text-primary" />
         </div>
         <div className="flex items-center gap-8">
-          <a href="#" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-primary transition-colors">
             <Home className="w-5 h-5" />
             <span className="font-semibold">Home</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+          </Link>
+          <Link to="/models" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
             <Trophy className="w-5 h-5" />
             <span className="font-semibold">Models</span>
-          </a>
+          </Link>
           <a href="#" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
             <Award className="w-5 h-5" />
             <span className="font-semibold">Ranking</span>
@@ -120,7 +123,10 @@ const Index = () => {
                 Vote For Your Favorite Model!
               </Button>
               
-              <Button className="w-full h-16 text-lg font-bold bg-gradient-to-r from-event-green to-event-green/80 hover:from-event-green/90 hover:to-event-green/70 text-white">
+              <Button 
+                onClick={() => setContactModalOpen(true)}
+                className="w-full h-16 text-lg font-bold bg-gradient-to-r from-event-green to-event-green/80 hover:from-event-green/90 hover:to-event-green/70 text-white"
+              >
                 <Headphones className="w-5 h-5 mr-2" />
                 Contact Support
               </Button>
@@ -151,6 +157,7 @@ const Index = () => {
       </main>
 
       <TicketModal open={ticketModalOpen} onOpenChange={setTicketModalOpen} />
+      <ContactModal open={contactModalOpen} onOpenChange={setContactModalOpen} />
     </div>
   );
 };
