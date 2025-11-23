@@ -22,7 +22,10 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
   const [category, setCategory] = useState<"student" | "non-student" | null>(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  
+
+  // NEW STATES
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+
   const [tickets, setTickets] = useState<TicketType[]>([
     { id: "regular", name: "Regular Student", price: 100, quantity: 0 },
     { id: "vip", name: "VIP Student", price: 300, quantity: 0 },
@@ -31,7 +34,7 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
   ]);
 
   const updateQuantity = (id: string, change: number) => {
-    setTickets(tickets.map(t => 
+    setTickets(tickets.map(t =>
       t.id === id ? { ...t, quantity: Math.max(0, t.quantity + change) } : t
     ));
   };
@@ -68,91 +71,105 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
 
   const isFormValid = email.trim() !== "" && phone.trim() !== "" && getTotalPrice() > 0;
 
-  return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-background border-border max-w-2xl max-h-[90vh] overflow-y-auto">
-        {step === "category" ? (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center text-accent flex items-center justify-center gap-2">
-                <Ticket className="w-6 h-6" />
-                Purchase Tickets
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-6">
-              <Button
-                onClick={() => handleCategorySelect("student")}
-                className="w-full h-20 text-xl font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground"
-              >
-                <GraduationCap className="w-6 h-6 mr-3" />
-                UoN Student
-              </Button>
-              <Button
-                onClick={() => handleCategorySelect("non-student")}
-                className="w-full h-20 text-xl font-bold bg-gradient-to-r from-event-pink to-event-pink/80 hover:from-event-pink/90 hover:to-event-pink/70 text-white"
-              >
-                <Users className="w-6 h-6 mr-3" />
-                Non-Student
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-foreground">Available Tickets</DialogTitle>
-            </DialogHeader>
-            
-            <div className="space-y-4 mt-4">
-              <div className="bg-card rounded-lg p-4 border border-border space-y-2">
-                <div className="flex items-center gap-2 text-foreground">
-                  <Clock className="w-5 h-5 text-accent" />
-                  <span className="font-semibold">First Show - 6:00 PM 05/12/25 - 6:00 AM 06/12/25</span>
-                </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <MapPin className="w-5 h-5 text-event-pink" />
-                  <span className="font-semibold">KICC</span>
-                </div>
-              </div>
+  // NEW CONFIRM FUNCTION
+  const handleConfirmPurchase = () => {
+    // show verification modal
+    setShowVerifyModal(true);
 
-              <div className="space-y-3">
-                {getFilteredTickets().map((ticket) => (
-                  <div key={ticket.id} className="bg-card rounded-lg p-5 border border-border">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-bold text-event-pink text-lg">flash sale {ticket.name}</h3>
-                        <p className="text-2xl font-bold text-event-pink mt-2">KES {ticket.price.toLocaleString()}.00</p>
+    // auto close after 5 seconds
+    setTimeout(() => {
+      setShowVerifyModal(false);
+      handleClose(); // close main ticket modal
+    }, 5000);
+  };
+
+  return (
+    <>
+      {/* MAIN PURCHASE MODAL */}
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="bg-background border-border max-w-2xl max-h-[90vh] overflow-y-auto">
+          {step === "category" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-center text-accent flex items-center justify-center gap-2">
+                  <Ticket className="w-6 h-6" />
+                  Purchase Tickets
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-6">
+                <Button
+                  onClick={() => handleCategorySelect("student")}
+                  className="w-full h-20 text-xl font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground"
+                >
+                  <GraduationCap className="w-6 h-6 mr-3" />
+                  UoN Student
+                </Button>
+                <Button
+                  onClick={() => handleCategorySelect("non-student")}
+                  className="w-full h-20 text-xl font-bold bg-gradient-to-r from-event-pink to-event-pink/80 hover:from-event-pink/90 hover:to-event-pink/70 text-white"
+                >
+                  <Users className="w-6 h-6 mr-3" />
+                  Non-Student
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-foreground">Available Tickets</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4 mt-4">
+                <div className="bg-card rounded-lg p-4 border border-border space-y-2">
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Clock className="w-5 h-5 text-accent" />
+                    <span className="font-semibold">First Show - 6:00 PM 05/12/25 - 6:00 AM 06/12/25</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <MapPin className="w-5 h-5 text-event-pink" />
+                    <span className="font-semibold">KICC</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {getFilteredTickets().map((ticket) => (
+                    <div key={ticket.id} className="bg-card rounded-lg p-5 border border-border">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-bold text-event-pink text-lg">flash sale {ticket.name}</h3>
+                          <p className="text-2xl font-bold text-event-pink mt-2">KES {ticket.price.toLocaleString()}.00</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="rounded-full bg-muted border-border hover:bg-muted/80"
+                          onClick={() => updateQuantity(ticket.id, -1)}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-2xl font-bold text-foreground w-12 text-center">{ticket.quantity}</span>
+                        <Button
+                          size="icon"
+                          className="rounded-full bg-event-pink hover:bg-event-pink/80 text-white"
+                          onClick={() => updateQuantity(ticket.id, 1)}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="rounded-full bg-muted border-border hover:bg-muted/80"
-                        onClick={() => updateQuantity(ticket.id, -1)}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <span className="text-2xl font-bold text-foreground w-12 text-center">{ticket.quantity}</span>
-                      <Button
-                        size="icon"
-                        className="rounded-full bg-event-pink hover:bg-event-pink/80 text-white"
-                        onClick={() => updateQuantity(ticket.id, 1)}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              {getTotalPrice() > 0 && (
-                <>
+                {getTotalPrice() > 0 && (
                   <div className="bg-card rounded-lg p-5 border-2 border-primary space-y-4">
+
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span className="text-foreground">Total Amount:</span>
                       <span className="text-accent text-2xl">KES {getTotalPrice().toLocaleString()}</span>
                     </div>
-                    
+
                     <div className="border-t border-border pt-4 space-y-4">
                       <h4 className="font-bold text-foreground">Your Contact Information</h4>
                       <div className="space-y-3">
@@ -206,31 +223,52 @@ const TicketModal = ({ open, onOpenChange }: TicketModalProps) => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </>
-              )}
 
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex-1 border-border hover:bg-muted"
-                >
-                  Back
-                </Button>
-                <Button
-                  onClick={handleClose}
-                  disabled={!isFormValid}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
-                >
-                  Confirm Purchase
-                </Button>
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleBack}
+                    className="flex-1 border-border hover:bg-muted"
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    onClick={handleConfirmPurchase}
+                    disabled={!isFormValid}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
+                  >
+                    Confirm Purchase
+                  </Button>
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* NEW VERIFICATION MODAL */}
+      <Dialog open={showVerifyModal}>
+        <DialogContent className="bg-background border-border max-w-sm text-center py-10">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-accent">
+              Waiting to Verify Payment
+            </DialogTitle>
+          </DialogHeader>
+
+          <p className="text-foreground mt-3">
+            Verifying your payment from M-Pesa to Bank, if it delays we will send you an email...
+          </p>
+
+          <div className="mt-6 flex justify-center">
+            <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
